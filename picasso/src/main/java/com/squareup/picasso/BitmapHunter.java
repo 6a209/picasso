@@ -73,6 +73,7 @@ class BitmapHunter implements Runnable {
   final String key;
   final Request data;
   final int memoryPolicy;
+  final int networkPolicy;
   final RequestHandler requestHandler;
 
   Action action;
@@ -96,7 +97,8 @@ class BitmapHunter implements Runnable {
     this.key = action.getKey();
     this.data = action.getRequest();
     this.priority = action.getPriority();
-    this.memoryPolicy = action.memoryPolicy;
+    this.memoryPolicy = action.getMemoryPolicy();
+    this.networkPolicy = action.getNetworkPolicy();
     this.requestHandler = requestHandler;
     this.retryCount = requestHandler.getRetryCount();
   }
@@ -152,7 +154,13 @@ class BitmapHunter implements Runnable {
       }
     }
 
-    data.loadFromLocalCacheOnly = (retryCount == 0);
+    int adjustedNetworkPolicy = networkPolicy;
+    if (retryCount == 0) {
+      // Force offline only if this is there are no more retries.
+      adjustedNetworkPolicy |= NetworkPolicy.OFFLINE.index;
+    }
+    data.networkPolicy = adjustedNetworkPolicy;
+
     RequestHandler.Result result = requestHandler.load(data);
     if (result != null) {
       bitmap = result.getBitmap();

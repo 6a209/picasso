@@ -640,7 +640,7 @@ public class Picasso {
     if (singleton == null) {
       synchronized (Picasso.class) {
         if (singleton == null) {
-          singleton = new Builder(context).build();
+          singleton = new Builder(context).indicatorsEnabled(true).build();
         }
       }
     }

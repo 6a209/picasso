@@ -40,35 +40,32 @@ import static org.mockito.Mockito.when;
 @Config(manifest = Config.NONE)
 public class TargetActionTest {
 
-  @Test(expected = AssertionError.class)
-  public void throwsErrorWithNullResult() throws Exception {
+  @Test(expected = AssertionError.class) public void throwsErrorWithNullResult() throws Exception {
     TargetAction request =
-        new TargetAction(mock(Picasso.class), mockTarget(), null, 0, 0, null, URI_KEY_1, null);
+        new TargetAction(mock(Picasso.class), mockTarget(), null, 0, 0, null, URI_KEY_1, null, 0);
     request.complete(null, MEMORY);
   }
 
-  @Test
-  public void invokesSuccessIfTargetIsNotNull() throws Exception {
+  @Test public void invokesSuccessIfTargetIsNotNull() throws Exception {
     Bitmap bitmap = makeBitmap();
     Target target = mockTarget();
     TargetAction request =
-        new TargetAction(mock(Picasso.class), target, null, 0, 0, null, URI_KEY_1, null);
+        new TargetAction(mock(Picasso.class), target, null, 0, 0, null, URI_KEY_1, null, 0);
     request.complete(bitmap, MEMORY);
     verify(target).onBitmapLoaded(bitmap, MEMORY);
   }
 
-  @Test
-  public void invokesOnBitmapFailedIfTargetIsNotNullWithErrorDrawable() throws Exception {
+  @Test public void invokesOnBitmapFailedIfTargetIsNotNullWithErrorDrawable() throws Exception {
     Drawable errorDrawable = mock(Drawable.class);
     Target target = mockTarget();
     TargetAction request =
-        new TargetAction(mock(Picasso.class), target, null, 0, 0, errorDrawable, URI_KEY_1, null);
+        new TargetAction(mock(Picasso.class), target, null, 0, 0, errorDrawable, URI_KEY_1, null,
+            0);
     request.error();
     verify(target).onBitmapFailed(errorDrawable);
   }
 
-  @Test
-  public void invokesOnBitmapFailedIfTargetIsNotNullWithErrorResourceId() throws Exception {
+  @Test public void invokesOnBitmapFailedIfTargetIsNotNullWithErrorResourceId() throws Exception {
     Drawable errorDrawable = mock(Drawable.class);
     Target target = mockTarget();
     Context context = mock(Context.class);
@@ -77,7 +74,7 @@ public class TargetActionTest {
             mock(Stats.class), ARGB_8888, false, false);
     Resources res = mock(Resources.class);
     TargetAction request =
-        new TargetAction(picasso, target, null, 0, RESOURCE_ID_1, null, URI_KEY_1, null);
+        new TargetAction(picasso, target, null, 0, 0, null, URI_KEY_1, null, RESOURCE_ID_1);
 
     when(context.getResources()).thenReturn(res);
     when(res.getDrawable(RESOURCE_ID_1)).thenReturn(errorDrawable);
@@ -102,7 +99,7 @@ public class TargetActionTest {
     Picasso picasso = mock(Picasso.class);
 
     Bitmap bitmap = makeBitmap();
-    TargetAction tr = new TargetAction(picasso, bad, null, 0, 0, null, URI_KEY_1, null);
+    TargetAction tr = new TargetAction(picasso, bad, null, 0, 0, null, URI_KEY_1, null, 0);
     try {
       tr.complete(bitmap, MEMORY);
       fail();

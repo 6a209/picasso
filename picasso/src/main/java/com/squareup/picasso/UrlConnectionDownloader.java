@@ -50,22 +50,22 @@ public class UrlConnectionDownloader implements Downloader {
     return connection;
   }
 
-  @Override public Response load(Uri uri, boolean localCacheOnly) throws IOException {
+  @Override public Response load(Uri uri, int networkPolicy) throws IOException {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
       installCacheIfNeeded(context);
     }
 
     HttpURLConnection connection = openConnection(uri);
     connection.setUseCaches(true);
-    if (localCacheOnly) {
-      connection.setRequestProperty("Cache-Control", "only-if-cached,max-age=" + Integer.MAX_VALUE);
-    }
+    //if (localCacheOnly) {
+    //  connection.setRequestProperty("Cache-Control", "only-if-cached,max-age=" + Integer.MAX_VALUE);
+    //}
 
     int responseCode = connection.getResponseCode();
     if (responseCode >= 300) {
       connection.disconnect();
-      throw new ResponseException(responseCode + " " + connection.getResponseMessage(),
-          localCacheOnly, responseCode);
+      //throw new ResponseException(responseCode + " " + connection.getResponseMessage(),
+      //    localCacheOnly, responseCode);
     }
 
     long contentLength = connection.getHeaderFieldInt("Content-Length", -1);

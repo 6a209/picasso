@@ -51,19 +51,19 @@ public class OkHttpDownloaderTest {
         .setHeader("Cache-Control", "max-age=31536000")
         .setBody("Hi"));
 
-    Downloader.Response response1 = downloader.load(uri, false);
+    Downloader.Response response1 = downloader.load(uri, 0);
     assertThat(response1.cached).isFalse();
     // Exhaust input stream to ensure response is cached.
     Okio.buffer(Okio.source(response1.getInputStream())).readByteArray();
 
-    Downloader.Response response2 = downloader.load(uri, true);
+    Downloader.Response response2 = downloader.load(uri, 1);
     assertThat(response2.cached).isTrue();
   }
 
   @Test public void readsContentLengthHeader() throws Exception {
     server.enqueue(new MockResponse().addHeader("Content-Length", 1024));
 
-    Downloader.Response response = downloader.load(uri, false);
+    Downloader.Response response = downloader.load(uri, 0);
     assertThat(response.contentLength).isEqualTo(1024);
   }
 
@@ -71,7 +71,7 @@ public class OkHttpDownloaderTest {
     server.enqueue(new MockResponse().setStatus("HTTP/1.1 401 Not Authorized"));
 
     try {
-      downloader.load(uri, false);
+      downloader.load(uri, 0);
       fail("Expected ResponseException.");
     } catch (Downloader.ResponseException e) {
       assertThat(e).hasMessage("401 Not Authorized");
